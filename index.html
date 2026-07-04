@@ -3,414 +3,69 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WhoCares??</title>
+<title>L!ttleBoy</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  transition: all 0.2s ease-in-out;
-}
-
-:root {
-  --bg: #0b0b14;
-  --card: #161629;
-  --accent: #8b5cf6;
-  --accent-hover: #a78bfa;
-  --text: #f3f4f6;
-  --muted: #9ca3af;
-  --fav: #f59e0b;
-  --danger: #ef4444;
-  --glass: rgba(22, 22, 41, 0.7);
-}
-
-body {
-  font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;
-  background: radial-gradient(circle at top right, #1e1b4b, #0b0b14 60%);
-  color: var(--text);
-  min-height: 100vh;
-  padding-bottom: 60px;
-}
-
-header {
-  padding: 30px 40px 10px;
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  background: transparent;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.container {
-  padding: 20px 40px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-/* Controls Section (Search & Filter) */
-.controls-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-bottom: 40px;
-}
-
-@media(min-width: 768px) {
-  .controls-wrapper {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-}
-
-#search {
-  width: 100%;
-  max-width: 320px;
-  padding: 14px 20px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.05);
-  background: var(--card);
-  color: var(--text);
-  font-size: 14px;
-  outline: none;
-}
-
-#search:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
-}
-
-.tabs {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 5px;
-}
-
-.tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.tabs button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 14px;
-  background: var(--card);
-  color: var(--muted);
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.tabs button:hover {
-  color: var(--text);
-  background: rgba(255,255,255,0.05);
-}
-
-.tabs button.active {
-  background: var(--accent);
-  color: white;
-  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
-}
-
-/* Dashboard Stat */
-#dashboard {
-  font-size: 14px;
-}
-.stat {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 8px 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  color: var(--muted);
-}
-
-/* Main Grid List */
-#list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 24px;
-}
-
-/* Card Styling */
-.card {
-  background: var(--card);
-  border-radius: 20px;
-  overflow: hidden;
-  position: relative;
-  border: 1px solid rgba(255,255,255,0.03);
-  display: flex;
-  flex-direction: column;
-}
-
-.card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 30px rgba(0,0,0,0.4);
-  border-color: rgba(139, 92, 246, 0.2);
-}
-
-.img-container {
-  position: relative;
-  width: 100%;
-  padding-top: 135%; /* อัตราส่วนโปสเตอร์ที่สวยงาม */
-  overflow: hidden;
-  background: #111;
-}
-
-.card img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  cursor: pointer;
-}
-
-.card:hover img {
-  transform: scale(1.03);
-}
-
-.badge {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  padding: 6px 12px;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 600;
-  background: rgba(11, 11, 20, 0.75);
-  backdrop-filter: blur(8px);
-  color: var(--text);
-  border: 1px solid rgba(255,255,255,0.1);
-  z-index: 1;
-}
-
-.card-body {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
-.title {
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.4;
-  margin-bottom: 8px;
-  cursor: pointer;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  height: 42px; /* ล็อกความสูงเพื่อความเท่ากันของการ์ด */
-}
-
-.title:hover {
-  color: var(--accent-hover);
-}
-
-.meta {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 12px;
-}
-
-.actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: auto;
-}
-
-.actions button {
-  border: none;
-  background: rgba(255,255,255,0.05);
-  color: var(--text);
-  border-radius: 12px;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.actions button:hover {
-  background: rgba(255,255,255,0.1);
-}
-
-.actions .editBtn:hover {
-  color: var(--accent-hover);
-}
-
-.star {
-  font-size: 16px;
-  color: var(--muted);
-}
-.star.active {
-  color: var(--fav);
-  filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.5));
-}
-
-/* Floating Action Button (FAB) */
-.fab {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 60px;
-  height: 60px;
-  border: none;
-  border-radius: 20px;
-  background: var(--accent);
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 99;
-}
-
-.fab:hover {
-  transform: translateY(-4px) rotate(90deg);
-  background: var(--accent-hover);
-  box-shadow: 0 14px 30px rgba(139, 92, 246, 0.5);
-}
-
-/* Modern Modal */
-#modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(5, 5, 10, 0.8);
-  backdrop-filter: blur(12px);
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-}
-
-.modal-box {
-  background: var(--card);
-  padding: 30px;
-  border-radius: 24px;
-  width: 100%;
-  max-width: 400px;
-  border: 1px solid rgba(255,255,255,0.05);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-}
-
-.modal-box h3 {
-  font-size: 20px;
-  margin-bottom: 20px;
-  font-weight: 700;
-}
-
-.modal-box label {
-  display: block;
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 6px;
-  padding-left: 4px;
-}
-
-.modal-box input, .modal-box select {
-  width: 100%;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.05);
-  background: rgba(0,0,0,0.2);
-  color: var(--text);
-  font-family: inherit;
-  font-size: 14px;
-  outline: none;
-}
-
-.modal-box input:focus, .modal-box select:focus {
-  border-color: var(--accent);
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.modal-actions button {
-  border: none;
-  padding: 12px 20px;
-  border-radius: 14px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-#deleteBtn {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--danger);
-}
-#deleteBtn:hover {
-  background: var(--danger);
-  color: white;
-}
-
-#cancelBtn {
-  background: transparent;
-  color: var(--muted);
-}
-#cancelBtn:hover {
-  color: var(--text);
-}
-
-#saveBtn {
-  background: var(--accent);
-  color: white;
-}
-#saveBtn:hover {
-  background: var(--accent-hover);
-}
-
-/* Toast Notification */
-#toast {
-  position: fixed;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%) translateY(40px);
-  background: rgba(255, 255, 255, 0.95);
-  color: #0b0b14;
-  padding: 12px 24px;
-  border-radius: 16px;
-  font-weight: 600;
-  font-size: 14px;
-  opacity: 0;
-  pointer-events: none;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-  z-index: 1001;
-}
-#toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
+* { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.2s ease-in-out; }
+:root { --bg: #0b0b14; --card: #161629; --accent: #8b5cf6; --accent-hover: #a78bfa; --text: #f3f4f6; --muted: #9ca3af; --fav: #f59e0b; --danger: #ef4444; }
+body { font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif; background: radial-gradient(circle at top right, #1e1b4b, #0b0b14 60%); color: var(--text); min-height: 100vh; padding-bottom: 60px; }
+header { padding: 30px 40px 10px; display: flex; justify-content: space-between; align-items: center; }
+.brand { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+.container { padding: 20px 40px; max-width: 1400px; margin: 0 auto; }
+.controls-wrapper { display: flex; flex-direction: column; gap: 20px; margin-bottom: 40px; }
+@media(min-width: 768px) { .controls-wrapper { flex-direction: row; justify-content: space-between; align-items: center; } }
+#search { width: 100%; max-width: 320px; padding: 14px 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); background: var(--card); color: var(--text); font-size: 14px; outline: none; }
+#search:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15); }
+.tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs button { padding: 10px 20px; border: none; border-radius: 14px; background: var(--card); color: var(--muted); font-weight: 600; font-size: 14px; cursor: pointer; white-space: nowrap; }
+.tabs button:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+.tabs button.active { background: var(--accent); color: white; box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3); }
+.stat { background: rgba(255, 255, 255, 0.05); padding: 8px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); color: var(--muted); font-size: 14px; }
+#list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px; }
+.card { background: var(--card); border-radius: 20px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.03); display: flex; flex-direction: column; }
+.card:hover { transform: translateY(-6px); box-shadow: 0 20px 30px rgba(0,0,0,0.4); border-color: rgba(139, 92, 246, 0.2); }
+.img-container { position: relative; width: 100%; padding-top: 135%; overflow: hidden; background: #111; }
+.card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+.badge { position: absolute; top: 14px; left: 14px; padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: 600; background: rgba(11, 11, 20, 0.75); backdrop-filter: blur(8px); color: var(--text); border: 1px solid rgba(255,255,255,0.1); z-index: 1; }
+.card-body { padding: 16px; display: flex; flex-direction: column; flex-grow: 1; }
+.title { font-size: 15px; font-weight: 600; line-height: 1.4; margin-bottom: 8px; cursor: pointer; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 42px; }
+.title:hover { color: var(--accent-hover); }
+.meta { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.actions { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+.actions button { border: none; background: rgba(255,255,255,0.05); color: var(--text); border-radius: 12px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.actions button:hover { background: rgba(255, 255, 255, 0.1); }
+.actions .editBtn:hover { color: var(--accent-hover); }
+.star { font-size: 16px; color: var(--muted); }
+.star.active { color: var(--fav); filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.5)); }
+.fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border: none; border-radius: 20px; background: var(--accent); color: white; font-size: 24px; cursor: pointer; box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4); display: flex; align-items: center; justify-content: center; z-index: 99; }
+.fab:hover { transform: translateY(-4px) rotate(90deg); background: var(--accent-hover); }
+#modal { display: none; position: fixed; inset: 0; background: rgba(5, 5, 10, 0.8); backdrop-filter: blur(12px); align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+.modal-box { background: var(--card); padding: 30px; border-radius: 24px; width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.05); }
+.modal-box h3 { font-size: 20px; margin-bottom: 20px; font-weight: 700; }
+.modal-box label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; padding-left: 4px; }
+.modal-box input, .modal-box select { width: 100%; padding: 12px 16px; margin-bottom: 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); color: var(--text); font-family: inherit; font-size: 14px; outline: none; }
+.modal-box input:focus, .modal-box select:focus { border-color: var(--accent); }
+.modal-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; }
+.modal-actions button { border: none; padding: 12px 20px; border-radius: 14px; font-weight: 600; font-size: 14px; cursor: pointer; font-family: inherit; }
+#deleteBtn { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+#deleteBtn:hover { background: var(--danger); color: white; }
+#cancelBtn { background: transparent; color: var(--muted); }
+#cancelBtn:hover { color: var(--text); }
+#saveBtn { background: var(--accent); color: white; }
+#saveBtn:hover { background: var(--accent-hover); }
+#toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(40px); background: rgba(255, 255, 255, 0.95); color: #0b0b14; padding: 12px 24px; border-radius: 16px; font-weight: 600; font-size: 14px; opacity: 0; pointer-events: none; box-shadow: 0 15px 30px rgba(0,0,0,0.3); z-index: 1001; }
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
 <header>
-  <div>🎬 WhoCares??</div>
+  <div class="brand">🎬 L!ttleBoy</div>
   <div id="dashboard"></div>
 </header>
 
@@ -433,38 +88,16 @@ header {
 <div id="modal">
   <div class="modal-box">
     <h3>เพิ่ม / แก้ไขรายการ</h3>
-    
-    <label>ชื่อเรื่อง</label>
-    <input id="m-title" placeholder="ใส่ชื่อเรื่องที่นี่...">
-    
+    <label>ชื่อเรื่อง</label><input id="m-title" placeholder="ใส่ชื่อเรื่องที่นี่...">
     <label>ประเภท</label>
-    <select id="m-type">
-      <option value="anime">Anime</option>
-      <option value="manga">Manga</option>
-    </select>
-    
-    <label>ดู / อ่านถึงตอนที่</label>
-    <input id="m-episode" type="number" placeholder="เช่น 12">
-    
+    <select id="m-type"><option value="anime">Anime</option><option value="manga">Manga</option></select>
+    <label>ดู / อ่านถึงตอนที่</label><input id="m-episode" type="number" placeholder="เช่น 12">
     <label>สถานะ</label>
-    <select id="m-status">
-      <option value="กำลังดู">กำลังดู</option>
-      <option value="ดอง">ดอง</option>
-      <option value="จบแล้ว">จบแล้ว</option>
-    </select>
-    
-    <label>ลิงก์รูปภาพปก (URL)</label>
-    <input id="m-image" placeholder="https://...">
-    
-    <label>ลิงก์ไปรับชม/อ่านต่อ (URL)</label>
-    <input id="m-link" placeholder="https://...">
-    
+    <select id="m-status"><option value="กำลังดู">กำลังดู</option><option value="ดอง">ดอง</option><option value="จบแล้ว">จบแล้ว</option></select>
+    <label>ลิงก์รูปภาพปก (URL)</label><input id="m-image" placeholder="https://..."><label>ลิงก์ไปรับชม/อ่านต่อ (URL)</label><input id="m-link" placeholder="https://...">
     <div class="modal-actions">
       <button id="deleteBtn">ลบรายการ</button>
-      <div style="display: flex; gap: 8px;">
-        <button id="cancelBtn">ยกเลิก</button>
-        <button id="saveBtn">บันทึก</button>
-      </div>
+      <div style="display: flex; gap: 8px;"><button id="cancelBtn">ยกเลิก</button><button id="saveBtn">บันทึก</button></div>
     </div>
   </div>
 </div>
@@ -472,181 +105,131 @@ header {
 <div id="toast"></div>
 
 <script>
-document.addEventListener('DOMContentLoaded',function(){
+document.addEventListener('DOMContentLoaded', function() {
+  // บันทึกและใส่ลิงก์ Firebase ให้คุณเรียบร้อยแล้วครับ
+  const FIREBASE_URL = "https://l-ttleboy-default-rtdb.asia-southeast1.firebasedatabase.app/";
 
-let items = JSON.parse(localStorage.getItem('trackerPro')) || [];
-let filter = 'all';
-let currentIndex = null;
+  let items = {};
+  let filter = 'all';
+  let currentKey = null;
 
-const list = document.getElementById('list');
-const dashboard = document.getElementById('dashboard');
-const modal = document.getElementById('modal');
-const toast = document.getElementById('toast');
+  const list = document.getElementById('list');
+  const dashboard = document.getElementById('dashboard');
+  const modal = document.getElementById('modal');
+  const toast = document.getElementById('toast');
+  const mTitle = document.getElementById('m-title');
+  const mType = document.getElementById('m-type');
+  const mEpisode = document.getElementById('m-episode');
+  const mStatus = document.getElementById('m-status');
+  const mImage = document.getElementById('m-image');
+  const mLink = document.getElementById('m-link');
 
-const mTitle = document.getElementById('m-title');
-const mType = document.getElementById('m-type');
-const mEpisode = document.getElementById('m-episode');
-const mStatus = document.getElementById('m-status');
-const mImage = document.getElementById('m-image');
-const mLink = document.getElementById('m-link');
+  function showToast(text) { toast.textContent = text; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2000); }
+  function closeModal() { modal.style.display = 'none'; }
+  function openLink(url) { if (url) { window.open(url, '_blank'); } else { showToast('ยังไม่ได้ใส่ลิงก์เลยน้า 🥺'); } }
 
-function showToast(text){
-  toast.textContent = text;
-  toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'),1500);
-}
-
-function save(){
-  localStorage.setItem('trackerPro',JSON.stringify(items));
-  render();
-}
-
-function updateDashboard(){
-  dashboard.innerHTML=`<div class="stat">คลังทั้งหมด: ${items.length} เรื่อง</div>`;
-}
-
-function openLink(url){
-  if(url){
-    window.open(url,'_blank');
-  } else {
-    showToast('ยังไม่ได้ใส่ลิงก์เลยน้า 🥺');
+  function fetchCloudData() {
+    fetch(`${FIREBASE_URL}items.json`)
+      .then(res => res.json())
+      .then(data => {
+        items = data || {};
+        render();
+      }).catch(() => showToast('เชื่อมต่อฐานข้อมูลล้มเหลว ❌'));
   }
-}
 
-function render(){
-  list.innerHTML='';
-  const keyword=document.getElementById('search').value.toLowerCase();
+  function updateDashboard() {
+    const total = Object.keys(items).length;
+    dashboard.innerHTML = `<div class="stat">คลังทั้งหมด: ${total} เรื่อง</div>`;
+  }
 
-  items.forEach((item,i)=>{
-    if((filter==='all'||item.type===filter||(filter==='fav'&&item.fav))
-      && item.title.toLowerCase().includes(keyword)){
+  function render() {
+    list.innerHTML = '';
+    const keyword = document.getElementById('search').value.toLowerCase();
 
-      const card=document.createElement('div');
-      card.className='card';
-      card.innerHTML=`
-        <div class="badge">${item.status}</div>
-        <div class="img-container">
-          <img src="${item.image||'https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=400'}" class="openLink" data-link="${item.link||''}">
-        </div>
-        <div class="card-body">
-          <div class="title openLink" data-link="${item.link||''}">${item.title}</div>
-          <div class="meta">${item.type === 'anime' ? '🎬 ดูถึงตอนที่' : '📖 อ่านถึงตอนที่'}: ${item.episode||0}</div>
-          <div class="actions">
-            <button class="favBtn" data-index="${i}">
-              <span class="star ${item.fav?'active':''}">${item.fav?'★':'☆'}</span>
-            </button>
-            <button class="editBtn" data-index="${i}">✎</button>
+    Object.keys(items).forEach(key => {
+      const item = items[key];
+      if ((filter === 'all' || item.type === filter || (filter === 'fav' && item.fav)) && item.title.toLowerCase().includes(keyword)) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="badge">${item.status}</div>
+          <div class="img-container">
+            <img src="${item.image || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=400'}" class="openLink" data-link="${item.link || ''}">
           </div>
-        </div>`;
-      list.appendChild(card);
+          <div class="card-body">
+            <div class="title openLink" data-link="${item.link || ''}">${item.title}</div>
+            <div class="meta">${item.type === 'anime' ? '🎬 ดูถึงตอนที่' : '📖 อ่านถึงตอนที่'}: ${item.episode || 0}</div>
+            <div class="actions">
+              <button class="favBtn" data-key="${key}">
+                <span class="star ${item.fav ? 'active' : ''}">${item.fav ? '★' : '☆'}</span>
+              </button>
+              <button class="editBtn" data-key="${key}">✎</button>
+            </div>
+          </div>`;
+        list.appendChild(card);
+      }
+    });
+
+    document.querySelectorAll('.openLink').forEach(el => el.addEventListener('click', function() { openLink(this.dataset.link); }));
+    document.querySelectorAll('.favBtn').forEach(btn => btn.addEventListener('click', function() { toggleFav(this.dataset.key); }));
+    document.querySelectorAll('.editBtn').forEach(btn => btn.addEventListener('click', function() { openModal(this.dataset.key); }));
+    updateDashboard();
+  }
+
+  function openModal(key = null) {
+    currentKey = key;
+    modal.style.display = 'flex';
+    if (key) {
+      const item = items[key];
+      mTitle.value = item.title; mType.value = item.type; mEpisode.value = item.episode; mStatus.value = item.status; mImage.value = item.image; mLink.value = item.link || '';
+      document.getElementById('deleteBtn').style.display = 'block';
+    } else {
+      mTitle.value = ''; mEpisode.value = ''; mImage.value = ''; mLink.value = '';
+      document.getElementById('deleteBtn').style.display = 'none';
     }
-  });
+  }
 
-  document.querySelectorAll('.openLink').forEach(el=>{
-    el.addEventListener('click',function(){
-      openLink(this.dataset.link);
+  function saveItem() {
+    if (!mTitle.value.trim()) { showToast('กรุณาใส่ชื่อเรื่องด้วยน้า ✍️'); return; }
+    const data = {
+      title: mTitle.value, type: mType.value, episode: parseInt(mEpisode.value) || 0,
+      status: mStatus.value, image: mImage.value, link: mLink.value, fav: currentKey ? items[currentKey].fav : false
+    };
+
+    const url = currentKey ? `${FIREBASE_URL}items/${currentKey}.json` : `${FIREBASE_URL}items.json`;
+    const method = currentKey ? 'PUT' : 'POST';
+
+    fetch(url, { method: method, body: JSON.stringify(data) })
+      .then(() => { closeModal(); fetchCloudData(); showToast('บันทึกขึ้นคลาวด์เรียบร้อย! ✨'); });
+  }
+
+  function deleteItem() {
+    if (currentKey && confirm('แน่ใจนะว่าจะลบเรื่องนี้? 🥺')) {
+      fetch(`${FIREBASE_URL}items/${currentKey}.json`, { method: 'DELETE' })
+        .then(() => { closeModal(); fetchCloudData(); showToast('ลบรายการบนคลาวด์แล้ว 🗑️'); });
+    }
+  }
+
+  function toggleFav(key) {
+    const newFavStatus = !items[key].fav;
+    fetch(`${FIREBASE_URL}items/${key}/fav.json`, { method: 'PUT', body: JSON.stringify(newFavStatus) })
+      .then(() => { fetchCloudData(); showToast(newFavStatus ? 'เพิ่มในรายการโปรดแล้ว ⭐' : 'เอาออกจากรายการโปรด'); });
+  }
+
+  document.getElementById('addBtn').addEventListener('click', () => openModal());
+  document.getElementById('search').addEventListener('input', render);
+  document.getElementById('saveBtn').addEventListener('click', saveItem);
+  document.getElementById('cancelBtn').addEventListener('click', closeModal);
+  document.getElementById('deleteBtn').addEventListener('click', deleteItem);
+  document.querySelectorAll('.tabs button').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+      this.classList.add('active'); filter = this.dataset.filter; render();
     });
   });
 
-  document.querySelectorAll('.favBtn').forEach(btn=>{
-    btn.addEventListener('click',function(){
-      const i=this.dataset.index;
-      items[i].fav=!items[i].fav;
-      save();
-      showToast(items[i].fav?'เพิ่มในรายการโปรดแล้ว ⭐':'เอาออกจากรายการโปรด');
-    });
-  });
-
-  document.querySelectorAll('.editBtn').forEach(btn=>{
-    btn.addEventListener('click',function(){
-      openModal(this.dataset.index);
-    });
-  });
-
-  updateDashboard();
-}
-
-function openModal(index=null){
-  currentIndex=index;
-  modal.style.display='flex';
-
-  if(index!==null){
-    const item=items[index];
-    mTitle.value=item.title;
-    mType.value=item.type;
-    mEpisode.value=item.episode;
-    mStatus.value=item.status;
-    mImage.value=item.image;
-    mLink.value=item.link||'';
-    document.getElementById('deleteBtn').style.display = 'block';
-  } else {
-    mTitle.value='';
-    mEpisode.value='';
-    mImage.value='';
-    mLink.value='';
-    document.getElementById('deleteBtn').style.display = 'none';
-  }
-}
-
-function closeModal(){modal.style.display='none'}
-
-function saveItem(){
-  if(!mTitle.value.trim()) {
-    showToast('กรุณาใส่ชื่อเรื่องด้วยน้า ✍️');
-    return;
-  }
-
-  const data={
-    title:mTitle.value,
-    type:mType.value,
-    episode:parseInt(mEpisode.value)||0,
-    status:mStatus.value,
-    image:mImage.value,
-    link:mLink.value,
-    fav:false
-  };
-
-  if(currentIndex!==null){
-    data.fav=items[currentIndex].fav;
-    items[currentIndex]=data;
-  } else {
-    items.push(data);
-  }
-
-  closeModal();
-  save();
-  showToast('บันทึกเรียบร้อย! ✨');
-}
-
-function deleteItem(){
-  if(currentIndex!==null){
-    items.splice(currentIndex,1);
-    closeModal();
-    save();
-    showToast('ลบรายการแล้ว 🗑️');
-  }
-}
-
-// Events
-document.getElementById('addBtn').addEventListener('click',()=>openModal());
-document.getElementById('search').addEventListener('input',render);
-document.getElementById('saveBtn').addEventListener('click',saveItem);
-document.getElementById('cancelBtn').addEventListener('click',closeModal);
-document.getElementById('deleteBtn').addEventListener('click',deleteItem);
-
-document.querySelectorAll('.tabs button').forEach(btn=>{
-  btn.addEventListener('click',function(){
-    document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
-    this.classList.add('active');
-    filter=this.dataset.filter;
-    render();
-  });
-});
-
-render();
-
+  fetchCloudData();
 });
 </script>
-
 </body>
 </html>
