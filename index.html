@@ -1,9 +1,3 @@
-นี่คือโค้ดเต็มแบบที่นำไปก๊อปปี้วางทับโค้ดเดิมได้ทันทีครับ! โดยผมได้ทำการปรับปรุงเพิ่ม 2 จุดใหญ่ตามที่ขอมาเรียบร้อยแล้ว:
-
-1. **ระบบแบ่งหน้า (Pagination):** ตั้งค่าให้แสดงหน้าละ 20 เรื่อง หากเรื่องที่ 21 เป็นต้นไป จะถูกตัดไปอยู่หน้า 2 อัตโนมัติ พร้อมมีปุ่มเปลี่ยนหน้าสวยๆ ด้านล่าง
-2. **ล้างข้อมูลในฟอร์มเมื่อกดเพิ่มใหม่:** แก้ไขบั๊กชื่อเดิมค้าง เวลาคุณกดปุ่ม `＋` เพื่อเพิ่มเรื่องใหม่ ช่องพิมพ์ทุกช่อง (รวมถึงชื่อเรื่อง) จะถูกเคลียร์เป็นค่าว่างสะอาดพร้อมใช้งานทันทีครับ
-
-```html
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -268,7 +262,7 @@ header {
   filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.5));
 }
 
-/* Pagination Section */
+/* Pagination Styling */
 .pagination {
   display: flex;
   justify-content: center;
@@ -278,9 +272,9 @@ header {
 }
 
 .pagination button {
-  border: none;
   padding: 10px 20px;
-  border-radius: 12px;
+  border-radius: 14px;
+  border: none;
   background: var(--card);
   color: var(--text);
   font-weight: 600;
@@ -293,7 +287,7 @@ header {
 }
 
 .pagination button:disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -466,12 +460,11 @@ header {
   </div>
   
   <div id="list"></div>
-
-  <!-- ปุ่มเปลี่ยนหน้า Pagination -->
+  
   <div class="pagination">
-    <button id="prevPageBtn">◀ ย้อนกลับ</button>
-    <span id="pageInfo">หน้า 1 / 1</span>
-    <button id="nextPageBtn">ถัดไป ▶</button>
+    <button id="prevBtn" onclick="prevPage()">◀ ย้อนกลับ</button>
+    <span id="pageInfo">หน้า 1/1</span>
+    <button id="nextBtn" onclick="nextPage()">ถัดไป ▶</button>
   </div>
 </div>
 
@@ -519,17 +512,15 @@ header {
 <div id="toast"></div>
 
 <script>
-document.addEventListener('DOMContentLoaded', async function(){
+document.addEventListener('DOMContentLoaded', async function(){ // เพิ่ม async เพื่อรองรับการดึงข้อมูลออนไลน์
 
-const BIN_URL = "https://api.npoint.io/f22e6d83e44b71eb499b";
+const BIN_URL = "https://api.npoint.io/f22e6d83e44b71eb499b"; // ลิงก์ฐานข้อมูล Cloud ของคุณ
 
 let items = [];
 let filter = 'all';
 let currentIndex = null;
-
-// ตัวแปรแบ่งหน้า
 let currentPage = 1;
-const itemsPerPage = 20; // แสดงผลหน้าละ 20 เรื่องตามคำขอ
+const itemsPerPage = 20;
 
 const list = document.getElementById('list');
 const dashboard = document.getElementById('dashboard');
@@ -549,6 +540,7 @@ function showToast(text){
   setTimeout(()=>toast.classList.remove('show'),1500);
 }
 
+// ฟังก์ชันโหลดข้อมูลเริ่มต้นจาก Cloud
 async function loadData() {
   try {
     const response = await fetch(BIN_URL);
@@ -560,8 +552,9 @@ async function loadData() {
   }
 }
 
+// ฟังก์ชันบันทึกข้อมูลขึ้น Cloud แบบเรียลไทม์
 async function save(){
-  render();
+  render(); // อัปเดตหน้าจอทันทีเพื่อความลื่นไหล
   try {
     await fetch(BIN_URL, {
       method: 'POST',
@@ -592,25 +585,21 @@ function render(){
   list.innerHTML='';
   const keyword=document.getElementById('search').value.toLowerCase();
 
-  // กรองข้อมูลและผูก index จริงไว้ก่อนทำ Pagination
-  const filteredItems = items.map((item, originalIdx) => {
-    return { ...item, originalIdx };
-  }).filter(item => {
+  const filteredItems = items.filter(item => {
     return (filter==='all'||item.type===filter||(filter==='fav'&&item.fav))
       && item.title.toLowerCase().includes(keyword);
   });
 
-  // คำนวณหน้าและการตัดแบ่งข้อมูล (Slice)
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
-  if (currentPage > totalPages) currentPage = totalPages;
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  document.getElementById('pageInfo').innerText = `หน้า ${currentPage}/${totalPages || 1}`;
+  document.getElementById('prevBtn').disabled = currentPage === 1;
+  document.getElementById('nextBtn').disabled = currentPage === totalPages || totalPages === 0;
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedItems = filteredItems.slice(startIndex, endIndex);
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  const paginatedItems = filteredItems.slice(start, end);
 
-  // วนลูปแสดงผลรายการประจำหน้า
   paginatedItems.forEach((item)=>{
-    const i = item.originalIdx;
     const card=document.createElement('div');
     card.className='card';
     card.innerHTML=`
@@ -622,21 +611,15 @@ function render(){
         <div class="title openLink" data-link="${item.link||''}">${item.title}</div>
         <div class="meta">${item.type === 'anime' ? '🎬 ดูถึงตอนที่' : '📖 อ่านถึงตอนที่'}: ${item.episode||0}</div>
         <div class="actions">
-          <button class="favBtn" data-index="${i}">
+          <button class="favBtn" data-index="${items.indexOf(item)}">
             <span class="star ${item.fav?'active':''}">${item.fav?'★':'☆'}</span>
           </button>
-          <button class="editBtn" data-index="${i}">✎</button>
+          <button class="editBtn" data-index="${items.indexOf(item)}">✎</button>
         </div>
       </div>`;
     list.appendChild(card);
   });
 
-  // อัปเดต UI ของปุ่มเปลี่ยนหน้า
-  document.getElementById('pageInfo').textContent = `หน้า ${currentPage} / ${totalPages}`;
-  document.getElementById('prevPageBtn').disabled = currentPage === 1;
-  document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
-
-  // จัดการ Event Listeners
   document.querySelectorAll('.openLink').forEach(el=>{
     el.addEventListener('click',function(){
       openLink(this.dataset.link);
@@ -661,12 +644,31 @@ function render(){
   updateDashboard();
 }
 
+window.prevPage = function() {
+  if (currentPage > 1) {
+    currentPage--;
+    render();
+  }
+}
+
+window.nextPage = function() {
+  const keyword=document.getElementById('search').value.toLowerCase();
+  const filteredItems = items.filter(item => {
+    return (filter==='all'||item.type===filter||(filter==='fav'&&item.fav))
+      && item.title.toLowerCase().includes(keyword);
+  });
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    render();
+  }
+}
+
 function openModal(index=null){
   currentIndex=index;
   modal.style.display='flex';
 
   if(index!==null){
-    // กรณีแก้ไข: ดึงข้อมูลเดิมมาโชว์
     const item=items[index];
     mTitle.value=item.title;
     mType.value=item.type;
@@ -676,11 +678,11 @@ function openModal(index=null){
     mLink.value=item.link||'';
     document.getElementById('deleteBtn').style.display = 'block';
   } else {
-    // กรณีเพิ่มใหม่: ล้างค่าฟอร์มทั้งหมดให้โล่ง ไม่มีชื่อเดิมค้างแน่นอน 👍
+    // Clear the modal form
     mTitle.value='';
-    mType.value='anime';
+    mType.value='anime'; // Set default type
     mEpisode.value='';
-    mStatus.value='กำลังดู';
+    mStatus.value='กำลังดู'; // Set default status
     mImage.value='';
     mLink.value='';
     document.getElementById('deleteBtn').style.display = 'none';
@@ -702,11 +704,10 @@ function saveItem(){
     status:mStatus.value,
     image:mImage.value,
     link:mLink.value,
-    fav:false
+    fav:currentIndex!==null?items[currentIndex].fav:false
   };
 
   if(currentIndex!==null){
-    data.fav=items[currentIndex].fav;
     items[currentIndex]=data;
   } else {
     items.push(data);
@@ -726,37 +727,12 @@ function deleteItem(){
   }
 }
 
-// Events จัดการปุ่มเปลี่ยนหน้า
-document.getElementById('prevPageBtn').addEventListener('click', () => {
-  if (currentPage > 1) {
-    currentPage--;
-    render();
-    window.scrollTo({top: 0, behavior: 'smooth'});
-  }
-});
-
-document.getElementById('nextPageBtn').addEventListener('click', () => {
-  const keyword=document.getElementById('search').value.toLowerCase();
-  const filteredItems = items.filter(item => {
-    return (filter==='all'||item.type===filter||(filter==='fav'&&item.fav))
-      && item.title.toLowerCase().includes(keyword);
-  });
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
-
-  if (currentPage < totalPages) {
-    currentPage++;
-    render();
-    window.scrollTo({top: 0, behavior: 'smooth'});
-  }
-});
-
-// เคลียร์หน้ากลับไปหน้า 1 เสมอเวลาค้นหาหรือเปลี่ยนแท็บ
-document.getElementById('search').addEventListener('input', () => {
-  currentPage = 1;
-  render();
-});
-
+// Events
 document.getElementById('addBtn').addEventListener('click',()=>openModal());
+document.getElementById('search').addEventListener('input',function() {
+    currentPage = 1; // Reset to page 1 on new search
+    render();
+});
 document.getElementById('saveBtn').addEventListener('click',saveItem);
 document.getElementById('cancelBtn').addEventListener('click',closeModal);
 document.getElementById('deleteBtn').addEventListener('click',deleteItem);
@@ -766,11 +742,12 @@ document.querySelectorAll('.tabs button').forEach(btn=>{
     document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
     this.classList.add('active');
     filter=this.dataset.filter;
-    currentPage = 1; 
+    currentPage = 1; // Reset to page 1 on new filter
     render();
   });
 });
 
+// เริ่มต้นดึงข้อมูลจากออนไลน์แทนการดึงจากคอมฯ ตัวเอง
 loadData();
 
 });
@@ -778,5 +755,3 @@ loadData();
 
 </body>
 </html>
-
-```
