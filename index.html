@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WhoCares??</title>
+<title>L!TTLEBOY</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -287,7 +287,7 @@ header {
 }
 
 .pagination button:disabled {
-  opacity: 0.5;
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
@@ -444,7 +444,7 @@ header {
 <body>
 
 <header>
-  <div>🎬 WhoCares??</div>
+  <div>🎬 L!TTLEBOY</div>
   <div id="dashboard"></div>
 </header>
 
@@ -462,9 +462,9 @@ header {
   <div id="list"></div>
   
   <div class="pagination">
-    <button id="prevBtn" onclick="prevPage()">◀ ย้อนกลับ</button>
+    <button id="prevBtn">◀ ย้อนกลับ</button>
     <span id="pageInfo">หน้า 1/1</span>
-    <button id="nextBtn" onclick="nextPage()">ถัดไป ▶</button>
+    <button id="nextBtn">ถัดไป ▶</button>
   </div>
 </div>
 
@@ -475,7 +475,8 @@ header {
     <h3>เพิ่ม / แก้ไขรายการ</h3>
     
     <label>ชื่อเรื่อง</label>
-    <input id="m-title" placeholder="ใส่ชื่อเรื่องที่นี่...">
+    <!-- เพิ่ม autocomplete="off" เพื่อแก้ปัญหาประวัติชื่อเรื่องเดิมค้างและขึ้นมาบังฟอร์ม -->
+    <input id="m-title" placeholder="ใส่ชื่อเรื่องที่นี่..." autocomplete="off">
     
     <label>ประเภท</label>
     <select id="m-type">
@@ -484,7 +485,7 @@ header {
     </select>
     
     <label>ดู / อ่านถึงตอนที่</label>
-    <input id="m-episode" type="number" placeholder="เช่น 12">
+    <input id="m-episode" type="number" placeholder="เช่น 12" autocomplete="off">
     
     <label>สถานะ</label>
     <select id="m-status">
@@ -494,10 +495,10 @@ header {
     </select>
     
     <label>ลิงก์รูปภาพปก (URL)</label>
-    <input id="m-image" placeholder="https://...">
+    <input id="m-image" placeholder="https://..." autocomplete="off">
     
     <label>ลิงก์ไปรับชม/อ่านต่อ (URL)</label>
-    <input id="m-link" placeholder="https://...">
+    <input id="m-link" placeholder="https://..." autocomplete="off">
     
     <div class="modal-actions">
       <button id="deleteBtn">ลบรายการ</button>
@@ -512,9 +513,9 @@ header {
 <div id="toast"></div>
 
 <script>
-document.addEventListener('DOMContentLoaded', async function(){ // เพิ่ม async เพื่อรองรับการดึงข้อมูลออนไลน์
+document.addEventListener('DOMContentLoaded', async function(){
 
-const BIN_URL = "https://api.npoint.io/f22e6d83e44b71eb499b"; // ลิงก์ฐานข้อมูล Cloud ของคุณ
+const BIN_URL = "https://api.npoint.io/f22e6d83e44b71eb499b";
 
 let items = [];
 let filter = 'all';
@@ -540,7 +541,6 @@ function showToast(text){
   setTimeout(()=>toast.classList.remove('show'),1500);
 }
 
-// ฟังก์ชันโหลดข้อมูลเริ่มต้นจาก Cloud
 async function loadData() {
   try {
     const response = await fetch(BIN_URL);
@@ -552,9 +552,8 @@ async function loadData() {
   }
 }
 
-// ฟังก์ชันบันทึกข้อมูลขึ้น Cloud แบบเรียลไทม์
 async function save(){
-  render(); // อัปเดตหน้าจอทันทีเพื่อความลื่นไหล
+  render();
   try {
     await fetch(BIN_URL, {
       method: 'POST',
@@ -644,14 +643,16 @@ function render(){
   updateDashboard();
 }
 
-window.prevPage = function() {
+// ย้ายฟังก์ชันปุ่มเปลี่ยนหน้ามาผูกผ่าน JavaScript Event Listener แทน เพื่อไม่ให้เกิดปัญหามองไม่เห็นฟังก์ชัน
+document.getElementById('prevBtn').addEventListener('click', function() {
   if (currentPage > 1) {
     currentPage--;
     render();
+    window.scrollTo({top: 0, behavior: 'smooth'});
   }
-}
+});
 
-window.nextPage = function() {
+document.getElementById('nextBtn').addEventListener('click', function() {
   const keyword=document.getElementById('search').value.toLowerCase();
   const filteredItems = items.filter(item => {
     return (filter==='all'||item.type===filter||(filter==='fav'&&item.fav))
@@ -661,8 +662,9 @@ window.nextPage = function() {
   if (currentPage < totalPages) {
     currentPage++;
     render();
+    window.scrollTo({top: 0, behavior: 'smooth'});
   }
-}
+});
 
 function openModal(index=null){
   currentIndex=index;
@@ -678,11 +680,10 @@ function openModal(index=null){
     mLink.value=item.link||'';
     document.getElementById('deleteBtn').style.display = 'block';
   } else {
-    // Clear the modal form
     mTitle.value='';
-    mType.value='anime'; // Set default type
+    mType.value='anime';
     mEpisode.value='';
-    mStatus.value='กำลังดู'; // Set default status
+    mStatus.value='กำลังดู';
     mImage.value='';
     mLink.value='';
     document.getElementById('deleteBtn').style.display = 'none';
@@ -730,7 +731,7 @@ function deleteItem(){
 // Events
 document.getElementById('addBtn').addEventListener('click',()=>openModal());
 document.getElementById('search').addEventListener('input',function() {
-    currentPage = 1; // Reset to page 1 on new search
+    currentPage = 1;
     render();
 });
 document.getElementById('saveBtn').addEventListener('click',saveItem);
@@ -742,12 +743,11 @@ document.querySelectorAll('.tabs button').forEach(btn=>{
     document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
     this.classList.add('active');
     filter=this.dataset.filter;
-    currentPage = 1; // Reset to page 1 on new filter
+    currentPage = 1;
     render();
   });
 });
 
-// เริ่มต้นดึงข้อมูลจากออนไลน์แทนการดึงจากคอมฯ ตัวเอง
 loadData();
 
 });
