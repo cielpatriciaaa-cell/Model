@@ -161,7 +161,7 @@ header {
 .img-container {
   position: relative;
   width: 100%;
-  padding-top: 135%;
+  padding-top: 135%; /* อัตราส่วนโปสเตอร์ที่สวยงาม */
   overflow: hidden;
   background: #111;
 }
@@ -212,7 +212,7 @@ header {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  height: 42px;
+  height: 42px; /* ล็อกความสูงเพื่อความเท่ากันของการ์ด */
 }
 
 .title:hover {
@@ -475,6 +475,7 @@ header {
     <h3>เพิ่ม / แก้ไขรายการ</h3>
     
     <label>ชื่อเรื่อง</label>
+    <!-- เพิ่ม autocomplete="off" เพื่อแก้ปัญหาประวัติชื่อเรื่องเดิมค้างและขึ้นมาบังฟอร์ม -->
     <input id="m-title" placeholder="ใส่ชื่อเรื่องที่นี่..." autocomplete="off">
     
     <label>ประเภท</label>
@@ -514,8 +515,7 @@ header {
 <script>
 document.addEventListener('DOMContentLoaded', async function(){
 
-// เปลี่ยนมาใช้บริการคลังข้อมูลของ kvdb.io แทน เพื่อแก้ปัญหาการเซฟข้ามเครื่อง
-const BIN_URL = "https://kvdb.io/MN874qfG3yqWnS1L5W9qf1/littleboy_list";
+const BIN_URL = "https://api.npoint.io/f22e6d83e44b71eb499b";
 
 let items = [];
 let filter = 'all';
@@ -544,11 +544,7 @@ function showToast(text){
 async function loadData() {
   try {
     const response = await fetch(BIN_URL);
-    if(response.ok) {
-      items = await response.json() || [];
-    } else {
-      items = [];
-    }
+    items = await response.json() || [];
     render();
   } catch (error) {
     console.error("โหลดข้อมูลไม่สำเร็จ:", error);
@@ -647,6 +643,7 @@ function render(){
   updateDashboard();
 }
 
+// ย้ายฟังก์ชันปุ่มเปลี่ยนหน้ามาผูกผ่าน JavaScript Event Listener แทน เพื่อไม่ให้เกิดปัญหามองไม่เห็นฟังก์ชัน
 document.getElementById('prevBtn').addEventListener('click', function() {
   if (currentPage > 1) {
     currentPage--;
