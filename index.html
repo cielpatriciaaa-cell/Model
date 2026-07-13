@@ -475,7 +475,6 @@ header {
     <h3>เพิ่ม / แก้ไขรายการ</h3>
     
     <label>ชื่อเรื่อง</label>
-    <!-- เพิ่ม autocomplete="off" เพื่อแก้ปัญหาประวัติชื่อเรื่องเดิมค้างและขึ้นมาบังฟอร์ม -->
     <input id="m-title" placeholder="ใส่ชื่อเรื่องที่นี่..." autocomplete="off">
     
     <label>ประเภท</label>
@@ -552,11 +551,12 @@ async function loadData() {
   }
 }
 
+// แก้ไขฟังก์ชันเซฟตรงนี้เป็น PUT
 async function save(){
   render();
   try {
     await fetch(BIN_URL, {
-      method: 'POST',
+      method: 'PUT', // เปลี่ยนจาก 'POST' เป็น 'PUT' เพื่อแก้ไขข้อมูลเดิมออนไลน์
       headers: {
         'Content-Type': 'application/json'
       },
@@ -643,7 +643,6 @@ function render(){
   updateDashboard();
 }
 
-// ย้ายฟังก์ชันปุ่มเปลี่ยนหน้ามาผูกผ่าน JavaScript Event Listener แทน เพื่อไม่ให้เกิดปัญหามองไม่เห็นฟังก์ชัน
 document.getElementById('prevBtn').addEventListener('click', function() {
   if (currentPage > 1) {
     currentPage--;
