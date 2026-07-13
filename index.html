@@ -48,25 +48,6 @@ header {
   align-items: center;
 }
 
-.header-tools {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.btn-backup {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--text);
-  padding: 6px 12px;
-  border-radius: 10px;
-  font-size: 12px;
-  cursor: pointer;
-}
-.btn-backup:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
 .container {
   padding: 20px 40px;
   max-width: 1400px;
@@ -464,12 +445,7 @@ header {
 
 <header>
   <div>🎬 L!TTLEBOY</div>
-  <div class="header-tools">
-    <button class="btn-backup" id="exportBtn">📥 ส่งออกไฟล์</button>
-    <button class="btn-backup" id="importBtn">📤 นำเข้าไฟล์</button>
-    <input type="file" id="fileInput" accept=".json" style="display: none;">
-    <div id="dashboard"></div>
-  </div>
+  <div id="dashboard"></div>
 </header>
 
 <div class="container">
@@ -536,7 +512,10 @@ header {
 <div id="toast"></div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function(){
+document.addEventListener('DOMContentLoaded', async function(){
+
+// เปลี่ยนมาใช้บริการคลังข้อมูลของ kvdb.io แทน เพื่อแก้ปัญหาการเซฟข้ามเครื่อง
+const BIN_URL = "https://kvdb.io/MN874qfG3yqWnS1L5W9qf1/littleboy_list";
 
 let items = [];
 let filter = 'all';
@@ -559,37 +538,37 @@ const mLink = document.getElementById('m-link');
 function showToast(text){
   toast.textContent = text;
   toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'), 1500);
+  setTimeout(()=>toast.classList.remove('show'),1500);
 }
 
-// โหลดข้อมูลจาก localStorage ของเบราว์เซอร์
-function loadData() {
+async function loadData() {
   try {
-    const localData = localStorage.getItem('littleboy_items');
-    if (localData) {
-      items = JSON.parse(localData);
+    const response = await fetch(BIN_URL);
+    if(response.ok) {
+      items = await response.json() || [];
     } else {
-      // ข้อมูลเริ่มต้นเผื่อยังไม่มีอะไรในเครื่อง
-      items = [
-        {title: "Nano machine", type: "manga", episode: 314, status: "ดอง", image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=400", link: "", fav: false},
-        {title: "พี่ชายสายบอดี้การ์ด", type: "manga", episode: 181, status: "กำลังดู", image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=400", link: "", fav: false}
-      ];
+      items = [];
     }
     render();
   } catch (error) {
     console.error("โหลดข้อมูลไม่สำเร็จ:", error);
-    showToast("โหลดข้อมูลล้มเหลว ❌");
+    showToast("เชื่อมต่อข้อมูลออนไลน์ล้มเหลว ❌");
   }
 }
 
-// บันทึกลงในเบราว์เซอร์แทนการส่งไป npoint
-function save(){
+async function save(){
   render();
   try {
-    localStorage.setItem('littleboy_items', JSON.stringify(items));
+    await fetch(BIN_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(items)
+    });
   } catch (error) {
     console.error("บันทึกไม่สำเร็จ:", error);
-    showToast("บันทึกข้อมูลไม่สำเร็จ 🥺");
+    showToast("บันทึกข้อมูลออนไลน์ไม่สำเร็จ 🥺");
   }
 }
 
@@ -751,45 +730,6 @@ function deleteItem(){
     showToast('ลบรายการแล้ว 🗑️');
   }
 }
-
-// ฟังก์ชันส่งออกไฟล์ข้อมูล (Backup)
-document.getElementById('exportBtn').addEventListener('click', function() {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(items, null, 2));
-  const downloadAnchor = document.createElement('a');
-  downloadAnchor.setAttribute("href", dataStr);
-  downloadAnchor.setAttribute("download", "littleboy_backup.json");
-  document.body.appendChild(downloadAnchor);
-  downloadAnchor.click();
-  downloadAnchor.remove();
-  showToast('ส่งออกข้อมูลสำเร็จ 📥');
-});
-
-// ฟังก์ชันนำเข้าไฟล์ข้อมูล (Restore)
-document.getElementById('importBtn').addEventListener('click', function() {
-  document.getElementById('fileInput').click();
-});
-
-document.getElementById('fileInput').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    try {
-      const importedItems = JSON.parse(evt.target.result);
-      if (Array.isArray(importedItems)) {
-        items = importedItems;
-        save();
-        showToast('นำเข้าข้อมูลสำเร็จแล้ว! 📤');
-      } else {
-        showToast('รูปแบบไฟล์ไม่ถูกต้อง ❌');
-      }
-    } catch (err) {
-      showToast('อ่านไฟล์ไม่สำเร็จ ❌');
-    }
-  };
-  reader.readAsText(file);
-});
 
 // Events
 document.getElementById('addBtn').addEventListener('click',()=>openModal());
