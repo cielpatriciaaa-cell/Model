@@ -440,6 +440,11 @@ header {
   transform: translateX(-50%) translateY(0);
 }
 </style>
+
+<!-- โหลด Firebase SDK แบบไลบรารีสคริปต์ปกติ (Compat) เพื่อแก้ปัญหาโดนบราวเซอร์บล็อกโมดูล -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
 </head>
 <body>
 
@@ -511,23 +516,23 @@ header {
 
 <div id="toast"></div>
 
-<!-- นำเข้า Firebase SDK แบบโมดูลเพื่อความปลอดภัยและเชื่อมต่อ Realtime -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+<script>
+document.addEventListener('DOMContentLoaded', function(){
 
-// คอนฟิก Firebase ที่เปิดใช้งานสำหรับโปรเจ็กต์ L!ttleBoy ของคุณ
+// ตั้งค่าคอนฟิก Firebase L!ttleBoy
 const firebaseConfig = {
   apiKey: "AIzaSyDWK8M0jj-ctbZ3pfyHcf9mXNSLJDovmuU",
   authDomain: "l-ttleboy-fbf93.firebaseapp.com",
   projectId: "l-ttleboy-fbf93",
   storageBucket: "l-ttleboy-fbf93.firebasestorage.app",
   messagingSenderId: "1048664662757",
-  appId: "1:1048664662757:web:84fa1ec10be001aea2aa0c"
+  appId: "1:1048664662757:web:84fa1ec10be001aea2aa0c",
+  databaseURL: "https://l-ttleboy-fbf93-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+// เริ่มต้น Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
 let items = [];
 let filter = 'all';
@@ -553,9 +558,9 @@ function showToast(text){
   setTimeout(()=>toast.classList.remove('show'),1500);
 }
 
-// ฟังก์ชันโหลดข้อมูลและซิงค์ข้อมูล Realtime ทุกแท็บ/ทุกอุปกรณ์
+// ฟังก์ชันดึงข้อมูลแบบ Realtime รองรับทุกแท็บและทุกเครื่องมือถือ
 function initRealtimeDatabase() {
-  onValue(ref(db, 'animeList'), (snapshot) => {
+  db.ref('animeList').on('value', (snapshot) => {
     items = snapshot.val() || [];
     render();
   }, (error) => {
@@ -564,14 +569,12 @@ function initRealtimeDatabase() {
   });
 }
 
-// ฟังก์ชันเซฟข้อมูลขึ้น Firebase คลาวด์โดยตรงแทนการใช้ npoint/localStorage
-async function save(){
-  try {
-    await set(ref(db, 'animeList'), items);
-  } catch (error) {
+// ฟังก์ชันบันทึกข้อมูลขึ้น Firebase
+function save(){
+  db.ref('animeList').set(items).catch((error) => {
     console.error("บันทึกไม่สำเร็จ:", error);
     showToast("บันทึกข้อมูลออนไลน์ไม่สำเร็จ 🥺");
-  }
+  });
 }
 
 function updateDashboard(){
@@ -753,7 +756,7 @@ document.querySelectorAll('.tabs button').forEach(btn=>{
   });
 });
 
-// เริ่มต้นระบบ Realtime ซิงค์ข้อมูลทันทีที่เปิดแอป
+// เริ่มซิงค์ระบบฐานข้อมูลทันที
 initRealtimeDatabase();
 
 });
