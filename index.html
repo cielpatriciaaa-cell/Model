@@ -475,7 +475,6 @@ header {
     <h3>เพิ่ม / แก้ไขรายการ</h3>
     
     <label>ชื่อเรื่อง</label>
-    <!-- เพิ่ม autocomplete="off" เพื่อแก้ปัญหาประวัติชื่อเรื่องเดิมค้างและขึ้นมาบังฟอร์ม -->
     <input id="m-title" placeholder="ใส่ชื่อเรื่องที่นี่..." autocomplete="off">
     
     <label>ประเภท</label>
@@ -512,10 +511,23 @@ header {
 
 <div id="toast"></div>
 
-<script>
-document.addEventListener('DOMContentLoaded', async function(){
+<!-- นำเข้า Firebase SDK แบบโมดูลเพื่อความปลอดภัยและเชื่อมต่อ Realtime -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-const BIN_URL = "https://api.npoint.io/f22e6d83e44b71eb499b";
+// คอนฟิก Firebase ที่เปิดใช้งานสำหรับโปรเจ็กต์ L!ttleBoy ของคุณ
+const firebaseConfig = {
+  apiKey: "AIzaSyDWK8M0jj-ctbZ3pfyHcf9mXNSLJDovmuU",
+  authDomain: "l-ttleboy-fbf93.firebaseapp.com",
+  projectId: "l-ttleboy-fbf93",
+  storageBucket: "l-ttleboy-fbf93.firebasestorage.app",
+  messagingSenderId: "1048664662757",
+  appId: "1:1048664662757:web:84fa1ec10be001aea2aa0c"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
 let items = [];
 let filter = 'all';
@@ -541,27 +553,21 @@ function showToast(text){
   setTimeout(()=>toast.classList.remove('show'),1500);
 }
 
-async function loadData() {
-  try {
-    const response = await fetch(BIN_URL);
-    items = await response.json() || [];
+// ฟังก์ชันโหลดข้อมูลและซิงค์ข้อมูล Realtime ทุกแท็บ/ทุกอุปกรณ์
+function initRealtimeDatabase() {
+  onValue(ref(db, 'animeList'), (snapshot) => {
+    items = snapshot.val() || [];
     render();
-  } catch (error) {
-    console.error("โหลดข้อมูลไม่สำเร็จ:", error);
+  }, (error) => {
+    console.error("ซิงค์ข้อมูลล้มเหลว:", error);
     showToast("เชื่อมต่อข้อมูลออนไลน์ล้มเหลว ❌");
-  }
+  });
 }
 
+// ฟังก์ชันเซฟข้อมูลขึ้น Firebase คลาวด์โดยตรงแทนการใช้ npoint/localStorage
 async function save(){
-  render();
   try {
-    await fetch(BIN_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(items)
-    });
+    await set(ref(db, 'animeList'), items);
   } catch (error) {
     console.error("บันทึกไม่สำเร็จ:", error);
     showToast("บันทึกข้อมูลออนไลน์ไม่สำเร็จ 🥺");
@@ -585,7 +591,7 @@ function render(){
   const keyword=document.getElementById('search').value.toLowerCase();
 
   const filteredItems = items.filter(item => {
-    return (filter==='all'||item.type===filter||(filter==='fav'&&item.fav))
+    return item && (filter==='all'||item.type===filter||(filter==='fav'&&item.fav))
       && item.title.toLowerCase().includes(keyword);
   });
 
@@ -643,7 +649,6 @@ function render(){
   updateDashboard();
 }
 
-// ย้ายฟังก์ชันปุ่มเปลี่ยนหน้ามาผูกผ่าน JavaScript Event Listener แทน เพื่อไม่ให้เกิดปัญหามองไม่เห็นฟังก์ชัน
 document.getElementById('prevBtn').addEventListener('click', function() {
   if (currentPage > 1) {
     currentPage--;
@@ -655,7 +660,7 @@ document.getElementById('prevBtn').addEventListener('click', function() {
 document.getElementById('nextBtn').addEventListener('click', function() {
   const keyword=document.getElementById('search').value.toLowerCase();
   const filteredItems = items.filter(item => {
-    return (filter==='all'||item.type===filter||(filter==='fav'&&item.fav))
+    return item && (filter==='all'||item.type===filter||(filter==='fav'&&item.fav))
       && item.title.toLowerCase().includes(keyword);
   });
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
@@ -748,7 +753,8 @@ document.querySelectorAll('.tabs button').forEach(btn=>{
   });
 });
 
-loadData();
+// เริ่มต้นระบบ Realtime ซิงค์ข้อมูลทันทีที่เปิดแอป
+initRealtimeDatabase();
 
 });
 </script>
